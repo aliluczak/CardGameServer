@@ -8,7 +8,7 @@ public class RunServer : MonoBehaviour {
     public string connectionIP = "127.0.0.1";
     public int connectionPort = 8000;
     private string infoHistory="";
-    private NetworkView networkView;
+    private NetworkView serverNetworkView;
     private GameObject gameManagerObject;
     private GameObject serverNetworkManager;
     private GameManager gameManager;
@@ -16,14 +16,17 @@ public class RunServer : MonoBehaviour {
 
    //private string registerGameName = "alav5112021";
 
+    //initilizes all needed gameobjects and components
     void Start()
     {
         serverNetworkManager = GameObject.Find("ServerNetworkManager");
-        networkView = serverNetworkManager.GetComponent<NetworkView>();
+        serverNetworkView = serverNetworkManager.GetComponent<NetworkView>();
         gameManagerObject = GameObject.Find("GameManager");
         gameManager = gameManagerObject.GetComponent<GameManager>();
     }
 
+
+    //server interface
     void OnGUI()
     {
         if (Network.peerType == NetworkPeerType.Disconnected){
@@ -54,6 +57,9 @@ public class RunServer : MonoBehaviour {
         }
      }
 
+
+    // server Unity functions
+
     void OnServerInitialized()
     {
         infoHistory += "Server succesfullly initialized\n";
@@ -69,22 +75,56 @@ public class RunServer : MonoBehaviour {
         infoHistory += "Player succesfully disconnected from " +player.ipAddress + "\n";
     }
 
+
+    //functions sending something to player
+
+    //function sending specific card paremetrs to player
     public void sendCard(NetworkMessageInfo info, int attack, int defense, string gameObjectName) 
     {
-        networkView.RPC("addCard", info.sender, attack, defense, gameObjectName);
+        serverNetworkView.RPC("addCard", info.sender, attack, defense, gameObjectName);
     }
 
+    //function sending information that no card was chosen
     public void noCard(NetworkMessageInfo info)
     {
-        networkView.RPC("noCard", info.sender);
+        serverNetworkView.RPC("noCard", info.sender);
     }
 
+    //TODO function sending request for player to choose card for specific game, needs add a RPC
+    public void sendChooseCardRequest()
+    {
+
+    }
+
+
+
+
+    //RPCs sent to player
     [RPC]
     void noCard() { }
     
     [RPC]
     void addCard(int attack, int defense, string gameObjectName) { }
 
+    [RPC]
+    void userRegistered() { }
+
+    [RPC]
+    void usernameExists() { }
+
+    [RPC]
+    void userNotFound() { }
+
+    [RPC]
+    void wrongPassword() { }
+
+    [RPC]
+    void loginSuccess() { }
+
+
+    //RPCs received from player
+
+    //TODO change to connect with database, add card to choose
     [RPC]
     void Register(string username, string password, NetworkMessageInfo info)
     {
@@ -96,13 +136,12 @@ public class RunServer : MonoBehaviour {
             PlayerPrefs.SetString("password", "");
 
         string[] registeredUsernames = PlayerPrefs.GetString("username").Split();
-        string[] passwords = PlayerPrefs.GetString("password").Split();
         bool notRegistered = true;
         foreach (string s in registeredUsernames)
         {
             if (s.Equals(username))
-            {   
-                networkView.RPC("usernameExists", info.sender);
+            {
+                serverNetworkView.RPC("usernameExists", info.sender);
                 notRegistered = false;
                 break;
             }
@@ -118,11 +157,13 @@ public class RunServer : MonoBehaviour {
 
             PlayerPrefs.SetString("username", newUsername);
             PlayerPrefs.SetString("password", newPassword);
-            networkView.RPC("userRegistered", info.sender);
+            serverNetworkView.RPC("userRegistered", info.sender);
         }
         
     }
 
+
+    //TODO change connection to database
     [RPC]
     void Login(string username, string password, NetworkMessageInfo info)
     {
@@ -145,42 +186,37 @@ public class RunServer : MonoBehaviour {
 
         if (userNotFound)
         {
-            networkView.RPC("userNotFound", info.sender);
+            serverNetworkView.RPC("userNotFound", info.sender);
         }
 
         passwords = PlayerPrefs.GetString("password").Split();
 
         if (!passwords[lineIndex].Equals(password))
         {
-            networkView.RPC("wrongPassword", info.sender);
+            serverNetworkView.RPC("wrongPassword", info.sender);
         }
         else
         {
-            networkView.RPC("loginSuccess", info.sender);
+            serverNetworkView.RPC("loginSuccess", info.sender);
         }
 
     }
 
+
+    //received card request from player
     [RPC]
     void cardRequest(string cardType, string gameObjectName, NetworkMessageInfo info)
     {
         gameManager.chooseCard(cardType, info, gameObjectName);
     }
 
-    [RPC]
-    void userRegistered() { }
 
+    //TODO what card was chosen for game 
     [RPC]
-    void usernameExists() { }
+    void chosenCardForGame()
+    {
 
-    [RPC]
-    void userNotFound() { }
-
-    [RPC]
-    void wrongPassword() { }
-
-    [RPC]
-    void loginSuccess() { }
+    }
 
   /*void OnMasterServerEvent(MasterServerEvent masterServerEvent)
     {

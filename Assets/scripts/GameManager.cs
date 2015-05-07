@@ -11,6 +11,25 @@ public class GameManager : MonoBehaviour
     private Card cards;
     private RunServer networkManager;
 
+    //TODO complete all needed parameters
+    internal struct Player 
+    {
+        internal string login;
+        internal int hp;
+        internal List<Card> deck;
+        internal List<Card> cemetary;
+        internal Card hero;
+        internal Card support;
+        internal Card randomHero;
+        internal Card randomCard1;
+        internal Card randomCard2;
+    }
+
+    //players
+    internal Player playerA;
+    internal Player playerB;
+
+
     void Start()
     {
         cardObject = GameObject.Find("CardBase");
@@ -19,7 +38,28 @@ public class GameManager : MonoBehaviour
         networkManager = networkObject.GetComponent<RunServer>();
     }
 
-    public void chooseCard(string type, NetworkMessageInfo info, string gameObjectName)
+    //gameplay
+
+    //TODO manages all the gameplay with end conditions
+    internal void gameplay()
+    {
+
+    }
+
+    //TODO takes to connected players into one game, sends request to choose heros for the game
+    private void startGame()
+    {
+
+    }
+
+    //TODO generate decks for this game
+    private void generateDecks()
+    {
+
+    }
+
+
+    internal void chooseCard(string type, NetworkMessageInfo info, string gameObjectName)
     {
         bool somethingAdded = false;
         List<int> chosenCards = new List<int>();
