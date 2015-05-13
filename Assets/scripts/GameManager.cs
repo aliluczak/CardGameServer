@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
+
 public class GameManager : MonoBehaviour
 {
 
@@ -10,12 +11,14 @@ public class GameManager : MonoBehaviour
     private GameObject networkObject;
     private Card cards;
     private RunServer networkManager;
+    private List<Card> commonCards;
 
     //TODO complete all needed parameters
-    internal struct Player 
+    public struct Player 
     {
-        internal string login;
+        public string login;
         internal int hp;
+        internal List<Card> personalCards;
         internal List<Card> deck;
         internal List<Card> cemetary;
         internal Card hero;
@@ -26,16 +29,24 @@ public class GameManager : MonoBehaviour
     }
 
     //players
-    internal Player playerA;
-    internal Player playerB;
+    public Player playerA;
 
-
+    //
     void Start()
     {
         cardObject = GameObject.Find("CardBase");
         cards = cardObject.GetComponent<Card>();
         networkObject = GameObject.Find("ServerNetworkManager");
         networkManager = networkObject.GetComponent<RunServer>();
+
+        commonCards = new List<Card>();
+
+    }
+
+    //generates dek of common cards
+    void addCommonCards(List<Card> cards)
+    {
+
     }
 
     //gameplay
@@ -52,11 +63,24 @@ public class GameManager : MonoBehaviour
 
     }
 
-    //TODO generate decks for this game
-    private void generateDecks()
+    //TODO generate decks for this game, to add player parameter
+    private List<Card> generateDecks(Player player)
     {
+        List<Card> deck = new List<Card>();
+        List<Card> tempDeck = new List<Card>();
+ 
+        tempDeck.AddRange(player.personalCards);
+        tempDeck.AddRange(commonCards);
 
-    }
+        while (tempDeck.Count != 0)
+        {
+            int index = Random.Range(0, tempDeck.Count);
+            deck.Add(tempDeck[index]);
+            tempDeck.RemoveAt(index);
+        }
+
+        return deck;
+   }
 
 
     internal void chooseCard(string type, NetworkMessageInfo info, string gameObjectName)
