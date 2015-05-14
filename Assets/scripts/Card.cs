@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Card : MonoBehaviour {
+internal class Card : MonoBehaviour {
 
-    public string name;
-    public enum CardType { HERO, BOOSTER, SKILL };
-    public List<CardType> cardType;
-    public List<int> attack;
-    public List<int> defense;
+    internal string name;
+    internal enum CardType { HERO, BOOSTER, SKILL };
+    internal List<CardType> cardType;
+    internal List<int> attack;
+    internal List<int> defense;
 }

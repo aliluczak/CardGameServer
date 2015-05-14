@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     //TODO complete all needed parameters
     public struct Player 
     {
-        public string login;
+        internal string login;
         internal int hp;
         internal List<Card> personalCards;
         internal List<Card> deck;
@@ -26,10 +26,30 @@ public class GameManager : MonoBehaviour
         internal Card randomHero;
         internal Card randomCard1;
         internal Card randomCard2;
+
+        // TODO constructor for player, depends on login, gets personal cards 
+        internal Player(string playersLogin)
+        {
+            login = playersLogin;
+            hp = 10;
+
+            //gets personal cards
+            personalCards = new List<Card>();
+
+            deck = new List<Card>();
+            cemetary = new List<Card>();
+            hero = new Card();
+            support = new Card();
+            randomHero = new Card();
+            randomCard1 = new Card();
+            randomCard2 = new Card();
+        }
+        
     }
 
     //players
-    public Player playerA;
+    internal Player playerA;
+    internal Player playerB;
 
     //
     void Start()
@@ -40,10 +60,13 @@ public class GameManager : MonoBehaviour
         networkManager = networkObject.GetComponent<RunServer>();
 
         commonCards = new List<Card>();
-
+       
+        //TODO must have players login to create specific player representation
+        playerA = new Player();
+        playerB = new Player(); 
     }
 
-    //generates dek of common cards
+    //generates deck of common cards
     void addCommonCards(List<Card> cards)
     {
 
@@ -54,6 +77,8 @@ public class GameManager : MonoBehaviour
     //TODO manages all the gameplay with end conditions
     internal void gameplay()
     {
+        startGame();
+        
 
     }
 
@@ -114,7 +139,6 @@ public class GameManager : MonoBehaviour
 
         if (somethingAdded)
         {
-
             int chosenOne = Random.Range(0, chosenCards.Count);
             networkManager.sendCard(info, cards.attack[chosenOne], cards.defense[chosenOne], gameObjectName);
         }
