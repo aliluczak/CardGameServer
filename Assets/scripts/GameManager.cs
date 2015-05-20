@@ -81,19 +81,7 @@ public class GameManager : MonoBehaviour
     //TODO manages all the gameplay with end conditions
     internal void gameplay()
     {
-<<<<<<< HEAD
-=======
-        startGame();
-		//if playerA.hp <= 0
-		// game over
-		//if playerB.hp <= 0
-		// game over
-		//if playerA.hero = 0
-		// game over
-		//if playerB.hero = 0
-		// game over
->>>>>>> origin/master
-        
+
         int playerAHP = 10;
         int playerBHP = 10;
 
