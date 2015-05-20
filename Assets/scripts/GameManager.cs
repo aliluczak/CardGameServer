@@ -86,7 +86,6 @@ public class GameManager : MonoBehaviour
         int playerBHP = 10;
 
         startGame();
-        generateDecks(playerA);
 
         Player activePlayer = playerA;
         do
@@ -113,8 +112,8 @@ public class GameManager : MonoBehaviour
     {
 		//playerA.chooseCard("HERO", );
 		//playerB.chooseCard("HERO", );
-		playerA.generateDecks(playerA);
-		playerB.generateDecks(playerB);
+		generateDecks(playerA);
+		generateDecks(playerB);
     }
 
     //generate decks for this game, to add player parameter
