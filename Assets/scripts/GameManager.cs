@@ -26,12 +26,14 @@ public class GameManager : MonoBehaviour
         internal Card randomHero;
         internal Card randomCard1;
         internal Card randomCard2;
+        internal NetworkMessageInfo playerMessage;
 
         // TODO constructor for player, depends on login, gets personal cards 
-        internal Player(string playersLogin)
+        internal Player(string playersLogin, NetworkMessageInfo info)
         {
             login = playersLogin;
             hp = 10;
+            playerMessage = info;
 
             //gets personal cards
             personalCards = new List<Card>();
@@ -60,10 +62,12 @@ public class GameManager : MonoBehaviour
         networkManager = networkObject.GetComponent<RunServer>();
 
         commonCards = new List<Card>();
-       
+            
         //TODO must have players login to create specific player representation
         playerA = new Player();
-        playerB = new Player(); 
+        playerB = new Player();
+
+        addCommonCards(commonCards);
     }
 
     //generates deck of common cards
@@ -77,6 +81,8 @@ public class GameManager : MonoBehaviour
     //TODO manages all the gameplay with end conditions
     internal void gameplay()
     {
+<<<<<<< HEAD
+=======
         startGame();
 		//if playerA.hp <= 0
 		// game over
@@ -86,7 +92,31 @@ public class GameManager : MonoBehaviour
 		// game over
 		//if playerB.hero = 0
 		// game over
+>>>>>>> origin/master
         
+        int playerAHP = 10;
+        int playerBHP = 10;
+
+        startGame();
+        generateDecks(playerA);
+
+        Player activePlayer = playerA;
+        do
+        {
+
+        }
+        while (playerAHP == 0 || playerBHP == 0);
+
+        if (playerAHP == 0)
+        {
+            networkManager.sendLoseInfo(playerA.playerMessage);
+            networkManager.sendWinInfo(playerB.playerMessage);
+        }
+        else
+        {
+            networkManager.sendLoseInfo(playerB.playerMessage);
+            networkManager.sendWinInfo(playerA.playerMessage);
+        }
 
     }
 
@@ -99,7 +129,7 @@ public class GameManager : MonoBehaviour
 		playerB.generateDecks(playerB);
     }
 
-    //TODO generate decks for this game, to add player parameter
+    //generate decks for this game, to add player parameter
     private List<Card> generateDecks(Player player)
     {
         List<Card> deck = new List<Card>();

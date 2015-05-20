@@ -97,7 +97,15 @@ public class RunServer : MonoBehaviour {
 		serverNetworkView.RPC ("cardRequest", info.sender, cardType, gameObjectName);
     }
 
+    public void sendWinInfo(NetworkMessageInfo info)
+    {
+        serverNetworkView.RPC("win", info.sender);
+    }
 
+    public void sendLoseInfo(NetworkMessageInfo info)
+    {
+        serverNetworkView.RPC("lose", info.sender);
+    }
 
 
     //RPCs sent to player
@@ -122,10 +130,34 @@ public class RunServer : MonoBehaviour {
     [RPC]
     void loginSuccess() { }
 
+    [RPC]
+    void win() {}
+
+    [RPC]
+    void lose() {}
+	
+	
+
+
+
 
     //RPCs received from player
 
     //TODO change to connect with database, add card to choose
+	
+	//received card request from player
+    [RPC]
+    void cardRequest(string cardType, string gameObjectName, NetworkMessageInfo info)
+    {
+        gameManager.chooseCard(cardType, info, gameObjectName);
+    }
+    //TODO what card was chosen for game 
+    [RPC]
+	void chosenCardForGame(string cardType, string gameObjectName, NetworkMessageInfo info)
+    {
+		//gameManager.chooseCard (cardType, info, gameObjectName);
+
+    }
     [RPC]
     void Register(string username, string password, NetworkMessageInfo info)
     {
@@ -159,6 +191,11 @@ public class RunServer : MonoBehaviour {
             PlayerPrefs.SetString("username", newUsername);
             PlayerPrefs.SetString("password", newPassword);
             serverNetworkView.RPC("userRegistered", info.sender);
+
+
+            //TODO choosing several random cards of heros and send RPC for player to choose
+
+
         }
         
     }
@@ -219,6 +256,8 @@ public class RunServer : MonoBehaviour {
 		//gameManager.chooseCard (cardType, info, gameObjectName);
 
     }
+
+    
 
   /*void OnMasterServerEvent(MasterServerEvent masterServerEvent)
     {
