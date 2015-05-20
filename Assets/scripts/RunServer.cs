@@ -240,25 +240,6 @@ public class RunServer : MonoBehaviour {
 
     }
 
-
-    //received card request from player
-    [RPC]
-    void cardRequest(string cardType, string gameObjectName, NetworkMessageInfo info)
-    {
-        gameManager.chooseCard(cardType, info, gameObjectName);
-    }
-
-
-    //TODO what card was chosen for game 
-    [RPC]
-	void chosenCardForGame(string cardType, string gameObjectName, NetworkMessageInfo info)
-    {
-		//gameManager.chooseCard (cardType, info, gameObjectName);
-
-    }
-
-    
-
   /*void OnMasterServerEvent(MasterServerEvent masterServerEvent)
     {
         if (masterServerEvent == MasterServerEvent.RegistrationSucceeded)
