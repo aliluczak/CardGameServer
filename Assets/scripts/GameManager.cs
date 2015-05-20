@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
     //generates deck of common cards
     void addCommonCards(List<Card> cards)
     {
-
+	
     }
 
     //gameplay
@@ -78,6 +78,14 @@ public class GameManager : MonoBehaviour
     internal void gameplay()
     {
         startGame();
+		//if playerA.hp <= 0
+		// game over
+		//if playerB.hp <= 0
+		// game over
+		//if playerA.hero = 0
+		// game over
+		//if playerB.hero = 0
+		// game over
         
 
     }
@@ -85,7 +93,10 @@ public class GameManager : MonoBehaviour
     //TODO takes to connected players into one game, sends request to choose heros for the game
     private void startGame()
     {
-
+		//playerA.chooseCard("HERO", );
+		//playerB.chooseCard("HERO", );
+		playerA.generateDecks(playerA);
+		playerB.generateDecks(playerB);
     }
 
     //TODO generate decks for this game, to add player parameter

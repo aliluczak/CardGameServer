@@ -78,7 +78,7 @@ public class RunServer : MonoBehaviour {
 
     //functions sending something to player
 
-    //function sending specific card paremetrs to player
+    //function sending specific card parameters to player
     public void sendCard(NetworkMessageInfo info, int attack, int defense, string gameObjectName) 
     {
         serverNetworkView.RPC("addCard", info.sender, attack, defense, gameObjectName);
@@ -91,9 +91,10 @@ public class RunServer : MonoBehaviour {
     }
 
     //TODO function sending request for player to choose card for specific game, needs add a RPC
-    public void sendChooseCardRequest()
+	//olal31
+	public void sendChooseCardRequest(NetworkMessageInfo info, string cardType, string gameObjectName)
     {
-
+		serverNetworkView.RPC ("cardRequest", info.sender, cardType, gameObjectName);
     }
 
 
@@ -168,7 +169,7 @@ public class RunServer : MonoBehaviour {
     void Login(string username, string password, NetworkMessageInfo info)
     {
         string[] usernames;
-        string[] passwords ;
+        string[] passwords;
         int lineIndex = 0;
         bool userNotFound = true;
 
@@ -213,8 +214,9 @@ public class RunServer : MonoBehaviour {
 
     //TODO what card was chosen for game 
     [RPC]
-    void chosenCardForGame()
+	void chosenCardForGame(string cardType, string gameObjectName, NetworkMessageInfo info)
     {
+		//gameManager.chooseCard (cardType, info, gameObjectName);
 
     }
 
