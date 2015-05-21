@@ -70,7 +70,7 @@ public class GameManager : MonoBehaviour
         addCommonCards(commonCards);
     }
 
-    //generates deck of common cards
+    //generates deck of common cards for both players
     void addCommonCards(List<Card> cards)
     {
 	
@@ -110,10 +110,10 @@ public class GameManager : MonoBehaviour
     //TODO takes to connected players into one game, sends request to choose heros for the game
     private void startGame()
     {
-		//playerA.chooseCard("HERO", );
-		//playerB.chooseCard("HERO", );
-		generateDecks(playerA);
-		generateDecks(playerB);
+		playerA.deck = generateDecks(playerA);
+		playerB.deck = generateDecks(playerB);
+
+
     }
 
     //generate decks for this game, to add player parameter
@@ -135,7 +135,8 @@ public class GameManager : MonoBehaviour
         return deck;
    }
 
-
+	// function that chooses one card of specific type from all cards 
+	//TODO database connection
     internal void chooseCard(string type, NetworkMessageInfo info, string gameObjectName)
     {
         bool somethingAdded = false;

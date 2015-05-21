@@ -10,7 +10,7 @@ public class DatabaseManager : MonoBehaviour {
      *to specify, need to specify attributes
      */
 
-    private string _constr = "URI=file" + Application.dataPath;
+	private string _constr = "URI=file:blabla.db";
     internal IDbConnection _dbc;
     internal IDbCommand _dbcm;
     internal IDataReader _dbr;
