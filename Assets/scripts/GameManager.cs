@@ -175,4 +175,30 @@ public class GameManager : MonoBehaviour
             networkManager.noCard(info);
 
     }
+
+	// function that chooses hero card from all cards 
+	internal void chooseHeroCard(string type, NetworkMessageInfo info, string gameObjectName)
+	{
+		bool somethingAdded = false;
+		List<int> chosenCards = new List<int>();
+		for (int i = 0; i < cards.cardType.Count; i++)
+		{
+			if (type.Equals("HERO") && cards.cardType[i] == Card.CardType.HERO)
+			{
+				chosenCards.Add(i);
+				somethingAdded = true;
+			}
+			else
+				somethingAdded = false;
+		}
+
+		if (somethingAdded)
+		{
+			int chosenOne = Random.Range(0, chosenCards.Count);
+			networkManager.sendCard(info, cards.attack[chosenOne], cards.defense[chosenOne], gameObjectName);
+		}
+		else
+			networkManager.noCard(info);
+		
+	}
 }
