@@ -107,6 +107,11 @@ public class RunServer : MonoBehaviour {
         serverNetworkView.RPC("lose", info.sender);
     }
 
+	public void sendTieInfo(NetworkMessageInfo info)
+	{
+		serverNetworkView.RPC("tie", info.sender);
+	}
+
 
     //RPCs sent to player
     [RPC]
@@ -135,6 +140,9 @@ public class RunServer : MonoBehaviour {
 
     [RPC]
     void lose() {}
+
+	[RPC]
+	void tie() {}
 	
 	
 
