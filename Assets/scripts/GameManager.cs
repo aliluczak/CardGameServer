@@ -152,7 +152,7 @@ public class GameManager : MonoBehaviour
 
             if (type.Equals("BOOSTER") && cards.cardType[i] == Card.CardType.BOOSTER)
             {
-                chosenCards.Add(i);
+				chosenCards.Add(i);
                 somethingAdded = true;
             }
 
