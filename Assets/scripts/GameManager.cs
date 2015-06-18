@@ -142,8 +142,9 @@ public class GameManager : MonoBehaviour
 
 	// function that chooses one random card of specific type from all cards 
 	//TODO database connection
-    internal void chooseCard(string type, NetworkMessageInfo info, string gameObjectName)
+   internal void chooseCard(string type, NetworkMessageInfo info, string gameObjectName)
     {
+        /*
         bool somethingAdded = false;
         List<int> chosenCards = new List<int>();
         for (int i = 0; i < cards.cardType.Count; i++)
@@ -178,9 +179,9 @@ public class GameManager : MonoBehaviour
         }
         else
             networkManager.noCard(info);
-
+  */
     }
-
+  
     //move warrior card to warrior field
     private void moveCardToWarrior()
     {
