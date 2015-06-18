@@ -90,7 +90,12 @@ public class GameManager : MonoBehaviour
         Player activePlayer = playerA;
         do
         {
+            //TODO 
 
+            if (activePlayer.Equals(playerA))
+                activePlayer = playerB;
+            else
+                activePlayer = playerA;
         }
         while (playerAHP == 0 || playerBHP == 0);
 
@@ -175,4 +180,30 @@ public class GameManager : MonoBehaviour
             networkManager.noCard(info);
 
     }
+
+    //move warrior card to warrior field
+    private void moveCardToWarrior()
+    {
+
+    }
+
+    //move warrior card to support field
+    private void moveCardToSupport()
+    {
+
+    }
+
+    //use magic card
+    private void useMagicCard()
+    {
+
+    }
+
+    //attack phase
+    private void actionPhase()
+    {
+
+    }
+
+
 }
