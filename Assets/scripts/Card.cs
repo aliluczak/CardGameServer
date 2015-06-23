@@ -2,14 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 
-internal class Card : MonoBehaviour {
+public class Card : MonoBehaviour {
 
+    internal int id;
     internal string name;
-    internal enum CardType { HERO, BOOSTER, SKILL};
+    internal enum CardType { HERO, SPELL};
 	//mage, tank & warrior concern Hero
 	//common concerns Booster & Skill
-	internal enum CardSubType {MAGE, TANK, WARRIOR, COMMON};
-    internal List<CardType> cardType;
-    internal List<int> attack;
-    internal List<int> defense;
+	internal enum CardSubType {MAGE, WARRIOR, TANK};
+    internal int attack;
+
+    internal Card()
+    {
+
+    }
+
 }

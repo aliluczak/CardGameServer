@@ -159,7 +159,8 @@ public class RunServer : MonoBehaviour {
     {
         gameManager.chooseCard(cardType, info, gameObjectName);
     }
-    //TODO what card was chosen for game 
+    //TODO what card was chosen for game
+ 
     [RPC]
 	void chosenCardForGame(string cardType, string gameObjectName, NetworkMessageInfo info)
     {
