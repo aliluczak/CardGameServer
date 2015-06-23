@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 
 Project("{2A72182A-C8E8-7699-A527-B924E722F5D3}") = "CardGameServer", "Assembly-CSharp-vs.csproj", "{2944368B-5A2F-FCDB-CF36-E8BA932BB1A3}"
 EndProject
+Project("{2A72182A-C8E8-7699-A527-B924E722F5D3}") = "CardGameServer", "Assembly-CSharp-Editor-vs.csproj", "{181F4F56-CD75-A82A-00CD-DB8FEC0FB0F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,11 +15,15 @@ Global
 		{2944368B-5A2F-FCDB-CF36-E8BA932BB1A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2944368B-5A2F-FCDB-CF36-E8BA932BB1A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2944368B-5A2F-FCDB-CF36-E8BA932BB1A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{181F4F56-CD75-A82A-00CD-DB8FEC0FB0F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{181F4F56-CD75-A82A-00CD-DB8FEC0FB0F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{181F4F56-CD75-A82A-00CD-DB8FEC0FB0F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{181F4F56-CD75-A82A-00CD-DB8FEC0FB0F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-																																																																																	GlobalSection(MonoDevelopProperties) = preSolution
+																																																																																				GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
