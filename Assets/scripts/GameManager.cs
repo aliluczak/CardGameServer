@@ -1,53 +1,33 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 
 
 public class GameManager : MonoBehaviour
 {
 
-    private GameObject cardObject;
     private GameObject networkObject;
     private Card cards;
     private RunServer networkManager;
-    private List<Card> commonCards;
+    public List<string> commonCards;
+    private Player playerComponent;
+    private cardHero hero;
+    private cardSpell spell;
+    private List<Card> board;
+    private DatabaseManager databaseManager;
+
+    private List<bool> boardA;
+    private List<bool> boardB;
+
+    bool movingPhaseA;
+    bool movingPhaseB;
+
+
 
     //TODO complete all needed parameters
-    public struct Player 
-    {
-        internal string login;
-        internal int hp;
-        internal List<Card> personalCards;
-        internal List<Card> deck;
-        internal List<Card> cemetary;
-        internal Card hero;
-        internal Card support;
-        internal Card randomHero;
-        internal Card randomCard1;
-        internal Card randomCard2;
-        internal NetworkMessageInfo playerMessage;
-
-        // TODO constructor for player, depends on login, gets personal cards 
-        internal Player(string playersLogin, NetworkMessageInfo info)
-        {
-            login = playersLogin;
-            hp = 10;
-            playerMessage = info;
-
-            //gets personal cards
-            personalCards = new List<Card>();
-
-            deck = new List<Card>();
-            cemetary = new List<Card>();
-            hero = new Card();
-            support = new Card();
-            randomHero = new Card();
-            randomCard1 = new Card();
-            randomCard2 = new Card();
-        }
-        
-    }
+      
 
     //players
     internal Player playerA;
@@ -56,50 +36,96 @@ public class GameManager : MonoBehaviour
     //
     void Start()
     {
-        cardObject = GameObject.Find("CardBase");
-        cards = cardObject.GetComponent<Card>();
+        cards = GetComponent<Card>();
+
         networkObject = GameObject.Find("ServerNetworkManager");
         networkManager = networkObject.GetComponent<RunServer>();
 
-        commonCards = new List<Card>();
-            
-        //TODO must have players login to create specific player representation
-        playerA = new Player();
-        playerB = new Player();
+        databaseManager = GameObject.Find("Database").GetComponent<DatabaseManager>();
 
-        addCommonCards(commonCards);
+        commonCards = new List<string>();
+
+        playerComponent = GetComponent<Player>();
+
+        board = new List<Card>();
+        boardA = new List<bool>();
+        boardB = new List<bool>();
+
+        for (int i = 0; i < 5; i++)
+        {
+            boardA.Add(false);
+            boardB.Add(false);
+        }
+        //TODO must have players login to create specific player representation
+
+        
     }
 
     //generates deck of common cards for both players
-    void addCommonCards(List<Card> cards)
-    {
-	
-    }
 
+    void generatesCommonDeck()
+    {
+        commonCards.Add("Kula ognia");
+        commonCards.Add("Piorun");
+        commonCards.Add("Wyleczenie");
+        commonCards.Add("Uzdrowienie");
+        commonCards.Add("Ściana lodu");
+        commonCards.Add("Mur");
+        commonCards.Add("Blokada");
+        commonCards.Add("Tarcza");
+        commonCards.Add("Pułapka");
+        commonCards.Add("Sopel lodu");
+        commonCards.Add("Trująca strzała");
+        commonCards.Add("Kula energii");
+    }
     //gameplay
+
+    // 0 - heroA
+    // 1 - supportA
+    // 2  -randomA
+    // 3 - random2A
+    // 4 - random3A
+    // 5 - heroB
+    // 6 - supportB
+    // 7  -randomB
+    // 8 - random2B
+    // 9 - random3B
+
 
     //TODO manages all the gameplay with end conditions
     internal void gameplay()
     {
+        board = new List<Card>();
 
-        int playerAHP = 10;
-        int playerBHP = 10;
+        generatesCommonDeck();
 
         startGame();
+        movingPhaseA = false;
+        movingPhaseB = false;
 
         Player activePlayer = playerA;
         do
         {
+            drawCardsForPlayer(playerA);
+            drawCardsForPlayer(playerB);
+            movingPhaseA = true;
+            movingPhaseB = true;
+
+            while (!(movingPhaseA == false && movingPhaseB == false))
+            {
+                continue;
+            }
+
+            actionPhase();
             //TODO 
 
-            if (activePlayer.Equals(playerA))
-                activePlayer = playerB;
-            else
-                activePlayer = playerA;
+            
         }
-        while (playerAHP == 0 || playerBHP == 0);
+        while (playerA.hp == 0 
+   //         || playerBHP == 0
+            );
 
-        if (playerAHP == 0)
+        if (playerA.hp == 0)
         {
             networkManager.sendLoseInfo(playerA.playerMessage);
             networkManager.sendWinInfo(playerB.playerMessage);
@@ -112,86 +138,139 @@ public class GameManager : MonoBehaviour
 
     }
 
+    private void drawCardsForPlayer(Player player)
+    {
+        string tempCard = chooseCard("HERO", player);
+        List<string> templist = databaseManager.getCard(Card.CardType.HERO, tempCard);
+        Card temp = new cardHero(int.Parse(templist[0]), templist[1], databaseManager.getHeroClass(int.Parse(templist[2])), int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
+        board[2] = temp;
+
+        if (player.Equals(playerA))
+            boardA[2] = true;
+        else
+            boardB[2] = true;
+
+        templist.Clear();
+        tempCard = chooseCard(player);
+        templist = databaseManager.getCard(Card.CardType.HERO, tempCard);
+
+        Card temp2;
+        if (templist == null)
+        {
+            templist = databaseManager.getCard(Card.CardType.SPELL, tempCard);
+            temp2 = new cardSpell(int.Parse(templist[0]), templist[1], templist[2], int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
+        }
+        else
+        {
+            temp2 = new cardHero(int.Parse(templist[0]), templist[1], databaseManager.getHeroClass(int.Parse(templist[2])), int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
+        }
+
+        board[3] = temp2;
+
+        if (player.Equals(playerA))
+            boardA[3] = true;
+        else
+            boardB[3] = true;
+
+        templist.Clear();
+        tempCard = chooseCard(player);
+        templist = databaseManager.getCard(Card.CardType.HERO, tempCard);
+
+        Card temp3;
+        if (templist == null)
+        {
+            templist = databaseManager.getCard(Card.CardType.SPELL, tempCard);
+            temp3 = new cardSpell(int.Parse(templist[0]), templist[1], templist[2], int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
+        }
+        else
+        {
+            temp3 = new cardHero(int.Parse(templist[0]), templist[1], databaseManager.getHeroClass(int.Parse(templist[2])), int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
+        }
+
+        board[4] = temp3;
+
+        if (player.Equals(playerA))
+            boardA[4] = true;
+        else
+            boardB[4] = true;
+    }
+
     //TODO takes to connected players into one game, sends request to choose heros for the game
     private void startGame()
     {
-		playerA.deck = generateDecks(playerA);
-		playerB.deck = generateDecks(playerB);
-
-
+        playerA.commonCards = generateDecks();
     }
 
     //generate decks for this game, to add player parameter
-    private List<Card> generateDecks(Player player)
+    private List<string> generateDecks()
     {
-        List<Card> deck = new List<Card>();
-        List<Card> tempDeck = new List<Card>();
- 
-        tempDeck.AddRange(player.personalCards);
-        tempDeck.AddRange(commonCards);
-
-        while (tempDeck.Count != 0)
-        {
-            int index = Random.Range(0, tempDeck.Count);
-            deck.Add(tempDeck[index]);
-            tempDeck.RemoveAt(index);
-        }
-
-        return deck;
-   }
+        return commonCards;
+    }
 
 	// function that chooses one random card of specific type from all cards 
 	//TODO database connection
-   internal void chooseCard(string type, NetworkMessageInfo info, string gameObjectName)
+   internal string chooseCard(string type, Player player)
     {
-        /*
-        bool somethingAdded = false;
-        List<int> chosenCards = new List<int>();
-        for (int i = 0; i < cards.cardType.Count; i++)
-        {
-            if (type.Equals("HERO") && cards.cardType[i] == Card.CardType.HERO)
+       
+        if (type.Equals("HERO"))
             {
-                chosenCards.Add(i);
-                somethingAdded = true;
+                int random = Random.Range(0, player.personalCards.Count);
+                string data = player.personalCards[random];
+                player.personalCards.Remove(data);
+                return data;
             }
-
-
-            if (type.Equals("BOOSTER") && cards.cardType[i] == Card.CardType.BOOSTER)
-            {
-				chosenCards.Add(i);
-                somethingAdded = true;
-            }
-
-
-            if (type.Equals("SKILL") && cards.cardType[i] == Card.CardType.SKILL)
-            {
-                chosenCards.Add(i);
-                somethingAdded = true;
-            }
-
-        }
-
-
-        if (somethingAdded)
-        {
-            int chosenOne = Random.Range(0, chosenCards.Count);
-            networkManager.sendCard(info, cards.attack[chosenOne], cards.defense[chosenOne], gameObjectName);
-        }
         else
-            networkManager.noCard(info);
-  */
+            {
+                int random = Random.Range(0, player.commonCards.Count);
+                string data = player.commonCards[random];
+                player.commonCards.Remove(data);
+                return data;
+            }
     }
+
+   internal string chooseCard(Player player)
+   {
+       Dictionary<string, bool> tempDeck = new Dictionary<string, bool>();
+
+       foreach (string c in player.personalCards)
+       {
+           tempDeck.Add(c, false);
+       }
+
+       foreach (string c in player.commonCards)
+       {
+           tempDeck.Add(c, true);
+       }
+
+       int random = Random.Range(0, tempDeck.Count);
+
+       if (tempDeck.ElementAt(random).Value.Equals(false))
+           player.personalCards.Remove(tempDeck.ElementAt(random).Key);
+       else
+           player.commonCards.Remove(tempDeck.ElementAt(random).Key);
+
+       return tempDeck.ElementAt(random).Key;
+   }
   
     //move warrior card to warrior field
-    private void moveCardToWarrior()
+    public void moveCard(int from, int to, NetworkMessageInfo info)
     {
-
-    }
-
-    //move warrior card to support field
-    private void moveCardToSupport()
-    {
-
+        if (info.sender.Equals(playerA.playerMessage.sender))
+        {
+            board[to] = board[from];
+            boardA[from] = false;
+            boardA[to] = true;
+            networkManager.sendCardMovedInfo(info, from, to);
+        }
+        else if (info.sender.Equals(playerB.playerMessage.sender))
+        {
+            board[to + 5] = board[from + 5];
+            boardB[from] = false;
+            boardB[to] = true;
+            networkManager.sendCardMovedInfo(info, from, to);
+        }
+        else
+            networkManager.sendCardCannotBeMovedInfo(info);
     }
 
     //use magic card

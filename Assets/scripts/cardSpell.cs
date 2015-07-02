@@ -9,12 +9,12 @@ public class cardSpell :  Card {
 
     public cardSpell(int idCard, string cardName, string cardDescription, int cardAttack, int cardHealing, int cardIntercept)
     {
-        id = idCard;
-        name = cardName;
-        description = cardDescription;
-        attack = cardAttack;
-        healing = cardHealing;
-        intercept = cardIntercept;
+        this.id = idCard;
+        this.name = cardName;
+        this.description = cardDescription;
+        this.attack = cardAttack;
+        this.healing = cardHealing;
+        this.intercept = cardIntercept;
     }
 
 

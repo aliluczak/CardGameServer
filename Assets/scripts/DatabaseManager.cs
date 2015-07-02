@@ -21,9 +21,10 @@ public class DatabaseManager : MonoBehaviour
     internal List<int?> card_list;
     internal List<string> card_info;
     internal List<string> player_info;
-
-
-
+    internal GameObject card;
+    internal cardHero hero;
+    internal cardSpell spell;
+    
     //TODO function connecting to database, probably use parameter
     internal void connectToDatabase()
     {
@@ -35,7 +36,12 @@ public class DatabaseManager : MonoBehaviour
     void Start()
     {
         card_list = new List<int?>();
+        card = GameObject.Find("GameManager");
+        hero = card.GetComponent<cardHero>();
+        spell = card.GetComponent<cardSpell>();
     }
+
+
 
 
     // TODO returns specific player's data
@@ -57,6 +63,10 @@ public class DatabaseManager : MonoBehaviour
 
             string Nick = _dbr.GetString(0);
             player_info.Add(Nick);
+
+            string password = _dbr.GetString(1);
+            player_info.Add(password);
+
             string Email = _dbr.GetString(2);
             player_info.Add(Email);
 
@@ -181,7 +191,7 @@ public class DatabaseManager : MonoBehaviour
 
 
     //TODO returns random card of specific type
-    internal List<string> getCard(Card.CardType type, int index)
+    internal List<string> getCard(Card.CardType type, string index)
     {
 
         string _constr = "URI=file:/dataBase.db"; //Path to database.
@@ -193,7 +203,7 @@ public class DatabaseManager : MonoBehaviour
 
         if (type == Card.CardType.HERO)
         {
-            _dbcm.CommandText = "SELECT * FROM Postacie WHERE ID = '" + index + "'";
+            _dbcm.CommandText = "SELECT * FROM Postacie WHERE NAZWA = '" + index + "'";
             _dbr = _dbcm.ExecuteReader();
 
 
@@ -202,7 +212,7 @@ public class DatabaseManager : MonoBehaviour
 
                 //System.Console.WriteLine(_dbr["text"]);
                 //int ID = _dbr.GetInt16(0);
-                string Nazwa = _dbr.GetString(1);
+                string Nazwa = _dbr.GetString(0);
                 card_info.Add(Nazwa);
                 string Klasa = _dbr.GetString(2);
                 card_info.Add(Klasa);
@@ -240,7 +250,8 @@ public class DatabaseManager : MonoBehaviour
             {
 
                 //System.Console.WriteLine(_dbr["text"]);
-                //int ID = _dbr.GetInt16(0);
+                int ID = _dbr.GetInt16(0);
+                card_info.Add(ID.ToString());
                 string Nazwa = _dbr.GetString(1);
                 card_info.Add(Nazwa);
                 string Opis = _dbr.GetString(2);
@@ -291,6 +302,15 @@ public class DatabaseManager : MonoBehaviour
         //account = new account{GraczID = gracz, Nick = name, Mail = email, Wygrane = win, Remisy = draw, Przegrane = loss, Karta1_ID}
 
     }
+
+    internal Card.CardSubType getHeroClass(int i)
+    {
+
+        //TODO
+        return Card.CardSubType.WARRIOR;
+    }
+
+
 }
 
 

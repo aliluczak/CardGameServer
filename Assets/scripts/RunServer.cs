@@ -12,6 +12,8 @@ public class RunServer : MonoBehaviour {
     private GameObject gameManagerObject;
     private GameObject serverNetworkManager;
     private GameManager gameManager;
+    private GameObject dataBaseObject;
+    private DatabaseManager dataBaseManager;
     
 
    //private string registerGameName = "alav5112021";
@@ -23,6 +25,8 @@ public class RunServer : MonoBehaviour {
         serverNetworkView = serverNetworkManager.GetComponent<NetworkView>();
         gameManagerObject = GameObject.Find("GameManager");
         gameManager = gameManagerObject.GetComponent<GameManager>();
+        dataBaseObject = GameObject.Find("Database");
+        dataBaseManager = dataBaseObject.GetComponent<DatabaseManager>();
     }
 
 
@@ -68,6 +72,7 @@ public class RunServer : MonoBehaviour {
     void OnPlayerConnected(NetworkPlayer player)
     {
         infoHistory += "Player succesfully connected from " + player.ipAddress + "\n";
+
     }
 
     void OnPlayerDisconnected(NetworkPlayer player)
@@ -112,6 +117,16 @@ public class RunServer : MonoBehaviour {
 		serverNetworkView.RPC("tie", info.sender);
 	}
 
+    public void sendCardMovedInfo(NetworkMessageInfo info, int from, int to)
+    {
+        serverNetworkView.RPC("cardMoved", info.sender, from, to);
+    }
+
+    public void sendCardCannotBeMovedInfo(NetworkMessageInfo info)
+    {
+        serverNetworkView.RPC("cardCannotBeMoved", info.sender);
+    }
+
 
     //RPCs sent to player
     [RPC]
@@ -139,10 +154,11 @@ public class RunServer : MonoBehaviour {
     void win() {}
 
     [RPC]
-    void lose() {}
+    void cardMoved() { }
 
-	[RPC]
-	void tie() {}
+    [RPC]
+    void cardCannotBeMoved() { }
+
 	
 	
 
@@ -153,12 +169,7 @@ public class RunServer : MonoBehaviour {
 
     //TODO change to connect with database, add card to choose
 	
-	//received card request from player
-    [RPC]
-    void cardRequest(string cardType, string gameObjectName, NetworkMessageInfo info)
-    {
-        gameManager.chooseCard(cardType, info, gameObjectName);
-    }
+  
     //TODO what card was chosen for game
  
     [RPC]
@@ -170,80 +181,62 @@ public class RunServer : MonoBehaviour {
     [RPC]
     void Register(string username, string password, NetworkMessageInfo info)
     {
-
-        if (!PlayerPrefs.HasKey("username"))
-            PlayerPrefs.SetString("username", "");
-
-        if (!PlayerPrefs.HasKey("password"))
-            PlayerPrefs.SetString("password", "");
-
-        string[] registeredUsernames = PlayerPrefs.GetString("username").Split();
         bool notRegistered = true;
-        foreach (string s in registeredUsernames)
+        List<string> data = dataBaseManager.getPlayer(username);
+
+        if (data!= null)
         {
-            if (s.Equals(username))
-            {
-                serverNetworkView.RPC("usernameExists", info.sender);
-                notRegistered = false;
-                break;
-            }
-           
+            serverNetworkView.RPC("usernameExists", info.sender);
+            notRegistered = false;
+            Debug.Log("usernameExists");
         }
-
-        if (notRegistered)
+        else
         {
-            string newUsername = PlayerPrefs.GetString("username");
-            newUsername += username + "\n";
-            string newPassword = PlayerPrefs.GetString("password");
-            newPassword += password + "\n";
-
-            PlayerPrefs.SetString("username", newUsername);
-            PlayerPrefs.SetString("password", newPassword);
+    
+       //     dataBaseManager.addAccount(username, password, "blablaba", 1);
             serverNetworkView.RPC("userRegistered", info.sender);
-
-
+            Debug.Log("user registered");
             //TODO choosing several random cards of heros and send RPC for player to choose
 
         }
         
     }
 
+    [RPC]
+    void moveCard(int from, int to, NetworkMessageInfo info)
+    {
+        gameManager.moveCard(from, to, info);
+    }
 
     //TODO change connection to database
     [RPC]
     void Login(string username, string password, NetworkMessageInfo info)
     {
-        string[] usernames;
-        string[] passwords;
-        int lineIndex = 0;
-        bool userNotFound = true;
+        List<string> playerInfo = new List<string>();
+        playerInfo = dataBaseManager.getPlayer(username);
 
-        usernames = PlayerPrefs.GetString("username").Split();
-        
-        foreach (string s in usernames)
-        { 
-            if (s.Equals(username)) {
-                userNotFound = false;
-                break;
-            }
-           
-                lineIndex++;
-        }
-
-        if (userNotFound)
+        if (playerInfo == null)
         {
             serverNetworkView.RPC("userNotFound", info.sender);
         }
 
-        passwords = PlayerPrefs.GetString("password").Split();
-
-        if (!passwords[lineIndex].Equals(password))
-        {
-            serverNetworkView.RPC("wrongPassword", info.sender);
-        }
         else
         {
-            serverNetworkView.RPC("loginSuccess", info.sender);
+            if (playerInfo[1].Equals(password))
+            {
+                if (gameManager.playerA = null)
+                    gameManager.playerA = new Player(username, info);
+                else
+                {
+                    gameManager.playerB = new Player(username, info);
+                    serverNetworkView.RPC("loginSuccess", info.sender);
+                    gameManager.gameplay();
+                }
+     //           gameManager.gameplay();
+                
+            }
+            else
+                serverNetworkView.RPC("wrongPassword", info.sender);
         }
 
     }
