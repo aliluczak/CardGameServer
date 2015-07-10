@@ -24,6 +24,8 @@ public class DatabaseManager : MonoBehaviour
     internal GameObject card;
     internal cardHero hero;
     internal cardSpell spell;
+    internal Card.CardSubType sub_type;
+    private string Class;
     
     //TODO function connecting to database, probably use parameter
     internal void connectToDatabase()
@@ -306,8 +308,51 @@ public class DatabaseManager : MonoBehaviour
     internal Card.CardSubType getHeroClass(int i)
     {
 
-        //TODO
-        return Card.CardSubType.WARRIOR;
+        string sql;
+        string _constr = "URI=file:/dataBase.db"; //Path to database.
+
+
+        _dbc = new SqliteConnection(_constr);
+        _dbc.Open(); //Open connection to the database.
+        _dbcm = _dbc.CreateCommand();
+        sql = "SELECT * FROM Klasa WHERE Id = '" + i + "' ";
+        _dbcm.CommandText = sql;
+        _dbr = _dbcm.ExecuteReader();
+
+        while (_dbr.Read())
+        {
+            Class = _dbr.GetString(1);
+
+
+            Console.WriteLine("Class:" + Class);
+            Debug.Log(Class);
+
+        }
+
+        // clean up
+        _dbr.Close();
+        _dbr = null;
+        _dbcm.Dispose();
+        _dbcm = null;
+        _dbc.Close();
+        _dbc = null;
+
+
+        switch (Class)
+        {
+            case "Mag":
+                sub_type = Card.CardSubType.MAGE;
+                break;
+            case "Wojownik":
+                sub_type = Card.CardSubType.WARRIOR;
+                break;
+            case "Tank":
+                sub_type = Card.CardSubType.TANK;
+                break;
+
+        }
+
+        return sub_type;
     }
 
 
