@@ -21,10 +21,10 @@ public class GameManager : MonoBehaviour
     private List<bool> boardA;
     private List<bool> boardB;
 
-    bool movingPhaseA;
-    bool movingPhaseB;
-
-
+    bool movingPhaseActive;
+    bool endMovingPhaseA;
+    bool endMovingPhaseB;
+    
 
     //TODO complete all needed parameters
       
@@ -58,6 +58,9 @@ public class GameManager : MonoBehaviour
         }
         //TODO must have players login to create specific player representation
 
+        movingPhaseActive = false;
+        endMovingPhaseA = false;
+        endMovingPhaseB = false;
         
     }
 
@@ -100,21 +103,15 @@ public class GameManager : MonoBehaviour
         generatesCommonDeck();
 
         startGame();
-        movingPhaseA = false;
-        movingPhaseB = false;
 
         Player activePlayer = playerA;
         do
         {
             drawCardsForPlayer(playerA);
             drawCardsForPlayer(playerB);
-            movingPhaseA = true;
-            movingPhaseB = true;
 
-            while (!(movingPhaseA == false && movingPhaseB == false))
-            {
-                continue;
-            }
+            movingPhase();
+
 
             actionPhase();
             //TODO 
@@ -137,6 +134,7 @@ public class GameManager : MonoBehaviour
         }
 
     }
+
 
     private void drawCardsForPlayer(Player player)
     {
@@ -195,6 +193,35 @@ public class GameManager : MonoBehaviour
             boardB[4] = true;
     }
 
+    private void movingPhase()
+    {
+        if (!movingPhaseActive)
+        {
+            networkManager.sendMovingPhaseInfo(playerA.playerMessage);
+            networkManager.sendMovingPhaseInfo(playerB.playerMessage);
+            setMovingPhaseActive();
+        }
+
+        if (movingPhaseActive)
+        {
+            waitForMovingPhaseEnd();
+        }
+    }
+
+    private void waitForMovingPhaseEnd()
+    {
+        StartCoroutine(waitForMovingPhaseResponse());
+    }
+
+    IEnumerator waitForMovingPhaseResponse()
+    {
+        while (!endMovingPhaseA || !endMovingPhaseB)
+        {
+            yield return null;
+        }
+
+
+    }
     //TODO takes to connected players into one game, sends request to choose heros for the game
     private void startGame()
     {
@@ -205,6 +232,11 @@ public class GameManager : MonoBehaviour
     private List<string> generateDecks()
     {
         return commonCards;
+    }
+
+    private void setMovingPhaseActive()
+    {
+        movingPhaseActive = true;
     }
 
 	// function that chooses one random card of specific type from all cards 

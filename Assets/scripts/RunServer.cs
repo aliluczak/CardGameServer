@@ -95,6 +95,7 @@ public class RunServer : MonoBehaviour {
         serverNetworkView.RPC("noCard", info.sender);
     }
 
+  
     //TODO function sending request for player to choose card for specific game, needs add a RPC
 	//olal31
 	public void sendChooseCardRequest(NetworkMessageInfo info, string cardType, string gameObjectName)
@@ -125,6 +126,11 @@ public class RunServer : MonoBehaviour {
     public void sendCardCannotBeMovedInfo(NetworkMessageInfo info)
     {
         serverNetworkView.RPC("cardCannotBeMoved", info.sender);
+    }
+
+    public void sendMovingPhaseInfo(NetworkMessageInfo info)
+    {
+        serverNetworkView.RPC("movingPhaseBegins", info.sender);
     }
 
 
@@ -158,6 +164,9 @@ public class RunServer : MonoBehaviour {
 
     [RPC]
     void cardCannotBeMoved() { }
+
+    [RPC]
+    void movingPhaseBegins() {}
 
 	
 	
