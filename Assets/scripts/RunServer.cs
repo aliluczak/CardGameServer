@@ -84,9 +84,9 @@ public class RunServer : MonoBehaviour {
     //functions sending something to player
 
     //function sending specific card parameters to player
-    public void sendCard(NetworkMessageInfo info, int attack, int defense, string gameObjectName) 
+    public void sendCard(NetworkMessageInfo info, int cardID, string cardName, string cardType, int cardHP, int cardAttack, int cardPassive, string cardDescription, int cardHealing, int cardIntercept) 
     {
-        serverNetworkView.RPC("addCard", info.sender, attack, defense, gameObjectName);
+        serverNetworkView.RPC("addCard", info.sender, cardID, cardName, cardType, cardHP, cardAttack, cardPassive, cardDescription, cardHealing, cardIntercept);
     }
 
     //function sending information that no card was chosen
@@ -133,13 +133,17 @@ public class RunServer : MonoBehaviour {
         serverNetworkView.RPC("movingPhaseBegins", info.sender);
     }
 
+    public void sendDrawingCardInfo(NetworkMessageInfo info)
+    {
+        serverNetworkView.RPC("drawingCards", info.sender);
+    }
 
     //RPCs sent to player
     [RPC]
     void noCard() { }
     
     [RPC]
-    void addCard(int attack, int defense, string gameObjectName) { }
+    void addCard(int cardID, string cardName, string cardType, int cardHP, int cardAttack, int cardPassive, string cardDescription, int cardHealing, int cardIntercept) { }
 
     [RPC]
     void userRegistered() { }
@@ -168,6 +172,10 @@ public class RunServer : MonoBehaviour {
     [RPC]
     void movingPhaseBegins() {}
 
+    [RPC]
+    void drawingCards() {}
+
+
 	
 	
 
@@ -190,13 +198,11 @@ public class RunServer : MonoBehaviour {
     [RPC]
     void Register(string username, string password, NetworkMessageInfo info)
     {
-        bool notRegistered = true;
         List<string> data = dataBaseManager.getPlayer(username);
 
         if (data!= null)
         {
             serverNetworkView.RPC("usernameExists", info.sender);
-            notRegistered = false;
             Debug.Log("usernameExists");
         }
         else
@@ -212,7 +218,7 @@ public class RunServer : MonoBehaviour {
     }
 
     [RPC]
-    void moveCard(int from, int to, NetworkMessageInfo info)
+    void moveCardRequest(int from, int to, NetworkMessageInfo info)
     {
         gameManager.moveCard(from, to, info);
     }
@@ -248,6 +254,12 @@ public class RunServer : MonoBehaviour {
                 serverNetworkView.RPC("wrongPassword", info.sender);
         }
 
+    }
+
+    [RPC]
+    void cardAdded(int number)
+    {
+        gameManager.setDrawingCard(number);
     }
 
   /*void OnMasterServerEvent(MasterServerEvent masterServerEvent)
