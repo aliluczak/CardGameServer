@@ -426,7 +426,7 @@ public class GameManager : MonoBehaviour
     }
 
     //use magic card
-    private void useMagicCard()
+    public void useMagicCard()
     {
 
     }
@@ -434,7 +434,7 @@ public class GameManager : MonoBehaviour
     //attack phase
     private void actionPhase()
     {
-
+        
     }
 
     internal void setDrawingCard()

@@ -262,6 +262,12 @@ public class RunServer : MonoBehaviour {
         gameManager.setDrawingCard(number);
     }
 
+    [RPC]
+    void magic(int numer)
+    {
+        gameManager.useMagicCard();
+    }
+
   /*void OnMasterServerEvent(MasterServerEvent masterServerEvent)
     {
         if (masterServerEvent == MasterServerEvent.RegistrationSucceeded)
