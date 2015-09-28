@@ -16,7 +16,8 @@ public class GameManager : MonoBehaviour
     private cardHero hero;
     private cardSpell spell;
     private List<Card> board;
-    private DatabaseManager databaseManager;
+    private PlayersData playerData;
+    private CardData cardData;
 
     private List<bool> boardA;
     private List<bool> boardB;
@@ -44,12 +45,14 @@ public class GameManager : MonoBehaviour
     //
     void Start()
     {
+        
         cards = GetComponent<Card>();
 
         networkObject = GameObject.Find("ServerNetworkManager");
         networkManager = networkObject.GetComponent<RunServer>();
 
-        databaseManager = GameObject.Find("Database").GetComponent<DatabaseManager>();
+        playerData = GameObject.Find("Data").GetComponent<PlayersData>();
+        cardData = GameObject.Find("Data").GetComponent<CardData>();
 
         commonCards = new List<string>();
 
@@ -66,6 +69,8 @@ public class GameManager : MonoBehaviour
         //TODO must have players login to create specific player representation
 
         movingPhaseActive = false;
+        playerA = new Player();
+        playerB = new Player();
         
     }
 
@@ -104,8 +109,7 @@ public class GameManager : MonoBehaviour
     internal void gameplay()
     {
         movingPhaseActive = false;
-        board = new List<Card>();
-
+        
         generatesCommonDeck();
 
         startGame();
@@ -144,8 +148,8 @@ public class GameManager : MonoBehaviour
     private void drawCardsForPlayer(Player player)
     {
         string tempCard = chooseCard("HERO", player);
-        List<string> templist = databaseManager.getCard(Card.CardType.HERO, tempCard);
-        board[2] = new cardHero(int.Parse(templist[0]), templist[1], databaseManager.getHeroClass(int.Parse(templist[2])), int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
+        cardHero card = cardData.getHero(tempCard); 
+        board[2] =card;
 
         if (player.Equals(playerA))
         {
@@ -154,62 +158,64 @@ public class GameManager : MonoBehaviour
         }
         else
             boardB[2] = true;
-        networkManager.sendCard(player.playerMessage, int.Parse(templist[0]), templist[1], "Hero", int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]), "", 0, 0);
+
+        networkManager.sendCard(player.playerMessage, card.id, card.name, "Hero", card.hp,card.attack, card.passive, "", 0, 0);
         StartCoroutine(waitForCardAdded(1));
 
         if (!drawingCard1)
         {
-            templist.Clear();
             tempCard = chooseCard(player);
-            templist = databaseManager.getCard(Card.CardType.HERO, tempCard);
+            card = cardData.getHero(tempCard);
 
-            Card temp2;
-            if (templist == null)
+            
+            if (card == null)
             {
-                templist = databaseManager.getCard(Card.CardType.SPELL, tempCard);
-                temp2 = new cardSpell(int.Parse(templist[0]), templist[1], templist[2], int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
-                networkManager.sendCard(player.playerMessage, int.Parse(templist[0]), templist[1], "Spell", 0, int.Parse(templist[3]), 0, templist[2], int.Parse(templist[4]), int.Parse(templist[5]));
+                cardSpell spell = cardData.getSpell(tempCard);
+                networkManager.sendCard(player.playerMessage, spell.id, spell.name, "Spell", 0, spell.attack, 0, spell.description, spell.healing, spell.intercept);
+                board[3] = spell;
                 StartCoroutine(waitForCardAdded(2));
             }
             else
             {
-                temp2 = new cardHero(int.Parse(templist[0]), templist[1], databaseManager.getHeroClass(int.Parse(templist[2])), int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
-                networkManager.sendCard(player.playerMessage, int.Parse(templist[0]), templist[1], "Hero", int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]), "", 0, 0);
+                
+                networkManager.sendCard(player.playerMessage, card.id, card.name, "Hero", card.hp, card.attack, card.passive, "", 0, 0);
+                board[3] = hero;
                 StartCoroutine(waitForCardAdded(2));
+
             }
 
             if (!drawingCard2)
             {
-                board[3] = temp2;
+
 
                 if (player.Equals(playerA))
                     boardA[3] = true;
                 else
                     boardB[3] = true;
 
-                templist.Clear();
                 tempCard = chooseCard(player);
-                templist = databaseManager.getCard(Card.CardType.HERO, tempCard);
+                card = cardData.getHero(tempCard);
 
-                Card temp3;
-                if (templist == null)
+
+                if (card == null)
                 {
-                    templist = databaseManager.getCard(Card.CardType.SPELL, tempCard);
-                    temp3 = new cardSpell(int.Parse(templist[0]), templist[1], templist[2], int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
-                    networkManager.sendCard(player.playerMessage, int.Parse(templist[0]), templist[1], "Spell", 0, int.Parse(templist[3]), 0, templist[2], int.Parse(templist[4]), int.Parse(templist[5]));
-                    StartCoroutine(waitForCardAdded(3));
+                    cardSpell spell = cardData.getSpell(tempCard);
+                    networkManager.sendCard(player.playerMessage, spell.id, spell.name, "Spell", 0, spell.attack, 0, spell.description, spell.healing, spell.intercept);
+                    board[4] = spell;
+                    StartCoroutine(waitForCardAdded(2));
                 }
                 else
                 {
-                    temp3 = new cardHero(int.Parse(templist[0]), templist[1], databaseManager.getHeroClass(int.Parse(templist[2])), int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]));
-                    networkManager.sendCard(player.playerMessage, int.Parse(templist[0]), templist[1], "Hero", int.Parse(templist[3]), int.Parse(templist[4]), int.Parse(templist[5]), "", 0, 0);
-                    StartCoroutine(waitForCardAdded(3));
+
+                    networkManager.sendCard(player.playerMessage, card.id, card.name, "Hero", card.hp, card.attack, card.passive, "", 0, 0);
+                    board[4] = hero;
+                    StartCoroutine(waitForCardAdded(2));
+
                 }
+
 
                 if (!drawingCard3)
                 {
-                    board[4] = temp3;
-
                     if (player.Equals(playerA))
                         boardA[4] = true;
                     else
@@ -332,8 +338,25 @@ public class GameManager : MonoBehaviour
     private void startGame()
     {
         playerA.commonCards = generateDecks();
-        playerA.hp = 10;
-        playerB.hp = 10;
+        playerA.personalCards = playerData.getPlayerCards(playerA.login);
+        playerB.commonCards = generateDecks();
+        playerB.personalCards = playerData.getPlayerCards(playerB.login);
+        board = new List<Card>();
+
+        for (int i = 0; i < 10; i++)
+        {
+            board.Add(null);
+        }
+    }
+
+    public void setEndMovingPhase(NetworkMessageInfo info)
+    {
+        if (info.sender.Equals(playerA.playerMessage.sender))
+        {
+            endMovingPhaseA = true;
+        }
+        else
+            endMovingPhaseB = true;
     }
 
     internal void setCardMoved()
