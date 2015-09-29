@@ -13,7 +13,8 @@ public class RunServer : MonoBehaviour {
     private GameObject serverNetworkManager;
     private GameManager gameManager;
     private GameObject dataBaseObject;
-    private DatabaseManager dataBaseManager;
+    private  PlayersData playerData;
+    private CardData cardData;
     
 
    //private string registerGameName = "alav5112021";
@@ -25,11 +26,15 @@ public class RunServer : MonoBehaviour {
         serverNetworkView = serverNetworkManager.GetComponent<NetworkView>();
         gameManagerObject = GameObject.Find("GameManager");
         gameManager = gameManagerObject.GetComponent<GameManager>();
-        dataBaseObject = GameObject.Find("Database");
-        dataBaseManager = dataBaseObject.GetComponent<DatabaseManager>();
+        dataBaseObject = GameObject.Find("Data");
+        playerData = dataBaseObject.GetComponent<PlayersData>();
+        cardData = dataBaseObject.GetComponent<CardData>();
     }
 
-
+    public void textMessage(string message)
+    {
+        infoHistory += message;
+    }
     //server interface
     void OnGUI()
     {
@@ -71,7 +76,7 @@ public class RunServer : MonoBehaviour {
 
     void OnPlayerConnected(NetworkPlayer player)
     {
-        infoHistory += "Player succesfully connected from " + player.ipAddress + "\n";
+
 
     }
 
@@ -138,6 +143,11 @@ public class RunServer : MonoBehaviour {
         serverNetworkView.RPC("drawingCards", info.sender);
     }
 
+    public void waitForAnotherPlayerInfo(NetworkMessageInfo info) 
+    {
+        serverNetworkView.RPC("waitForAnotherPlayer", info.sender);
+    }
+
     //RPCs sent to player
     [RPC]
     void noCard() { }
@@ -175,6 +185,8 @@ public class RunServer : MonoBehaviour {
     [RPC]
     void drawingCards() {}
 
+    [RPC]
+    void waitForAnotherPlayer() { }
 
 	
 	
@@ -198,7 +210,7 @@ public class RunServer : MonoBehaviour {
     [RPC]
     void Register(string username, string password, NetworkMessageInfo info)
     {
-        List<string> data = dataBaseManager.getPlayer(username);
+        List<string> data = playerData.getPlayer(username);
 
         if (data!= null)
         {
@@ -227,8 +239,9 @@ public class RunServer : MonoBehaviour {
     [RPC]
     void Login(string username, string password, NetworkMessageInfo info)
     {
+        infoHistory += "Player "+username+ " tries to log";
         List<string> playerInfo = new List<string>();
-        playerInfo = dataBaseManager.getPlayer(username);
+        playerInfo = playerData.getPlayer(username);
 
         if (playerInfo == null)
         {
@@ -239,11 +252,15 @@ public class RunServer : MonoBehaviour {
         {
             if (playerInfo[1].Equals(password))
             {
-                if (gameManager.playerA = null)
-                    gameManager.playerA = new Player(username, info);
+                if (gameManager.playerA.login==null)
+                {
+                    gameManager.playerA.setLogin(username, info);
+                    serverNetworkView.RPC("loginSuccess", info.sender);
+                    serverNetworkView.RPC("waitForAnotherPlayer", info.sender);
+                }
                 else
                 {
-                    gameManager.playerB = new Player(username, info);
+                    gameManager.playerB.setLogin(username, info);
                     serverNetworkView.RPC("loginSuccess", info.sender);
                     gameManager.gameplay();
                 }
@@ -260,6 +277,17 @@ public class RunServer : MonoBehaviour {
     void cardAdded(int number)
     {
         gameManager.setDrawingCard(number);
+    }
+
+    [RPC]
+    void magic(int numer)
+    {
+        gameManager.useMagicCard();
+    }
+
+    [RPC]
+    void endMovePhase(NetworkMessageInfo info) {
+
     }
 
   /*void OnMasterServerEvent(MasterServerEvent masterServerEvent)

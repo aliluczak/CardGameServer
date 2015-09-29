@@ -4,12 +4,15 @@ using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
 
+    CardData cardData;
+
     internal string login;
     internal int hp;
     internal List<string> personalCards;
     internal List<string> commonCards;
-    internal List<string> cemetary;
     internal NetworkMessageInfo playerMessage;
+
+
 
     public Player(string playersLogin, NetworkMessageInfo info)
     {
@@ -20,6 +23,20 @@ public class Player : MonoBehaviour {
         //gets personal cards
         this.personalCards = new List<string>();
         this.commonCards = new List<string>();
-        this.cemetary = new List<string>();
+
     }
+
+    public Player()
+    {
+        this.hp = 10;
+        this.commonCards = new List<string>();
+    }
+
+    public void setLogin(string login, NetworkMessageInfo info)
+    {
+        this.login = login;
+        this.playerMessage = info;
+    }
+
+    
 }
