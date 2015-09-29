@@ -452,12 +452,84 @@ public class GameManager : MonoBehaviour
     public void useMagicCard()
     {
 
+        cardSpell card1 = board[2] as cardSpell;
+        cardSpell card2 = board[3] as cardSpell;
+        cardSpell card3 = board[4] as cardSpell;
+
+        if (card1.Equals(Card.CardType.SPELL))
+        {
+            int healing = card1.healing;
+            int attack = card1.attack;
+            int intercept = card1.intercept;
+        }
+
+
+        if (card2.Equals(Card.CardType.SPELL))
+        {
+            int healing = card2.healing;
+            int attack = card2.attack;
+            int intercept = card2.intercept;
+        }
+
+
+        if (card3.Equals(Card.CardType.SPELL))
+        {
+            int healing = card3.healing;
+            int attack = card3.attack;
+            int intercept = card3.intercept;
+        }
+
     }
 
     //attack phase
     private void actionPhase()
     {
-        
+
+        cardHero card = board[0] as cardHero;
+        cardHero card1 = board[1] as cardHero;
+        cardHero opponent = board[5] as cardHero;
+        cardHero opponent1 = board[6] as cardHero;
+
+        //if (card.type.Equals(Card.CardSubType.MAGE))
+
+        //player
+        int php = card.hp;
+        int attack = card.attack;
+        int passive = card.passive;
+
+        //player support
+        int hp0 = card.hp;
+        int attack0 = card.attack;
+
+        //opponent
+        int p2hp = opponent.hp;
+        int oppAttack = opponent.attack;
+        int oppPassive = opponent.passive;
+
+        //opponent support
+        int oppHP1 = opponent1.hp;
+        int oppAttack1 = opponent1.attack;
+
+
+
+        //player 1 attack
+        if (boardA[1] == false)
+        {
+            php = php - oppAttack;
+        }
+        else
+            php = php - (oppAttack + oppAttack1);
+
+
+
+        //player 2 attack
+        if (boardB[1] == false)
+        {
+            p2hp = p2hp - attack;
+
+        }
+        else
+            p2hp = p2hp - (attack + attack0);
     }
 
     internal void setDrawingCard()
