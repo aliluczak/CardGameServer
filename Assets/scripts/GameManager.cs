@@ -122,7 +122,7 @@ public class GameManager : MonoBehaviour
             movingPhase();
 
 
-            actionPhase();
+            //actionPhase();
             //TODO 
 
             
@@ -449,7 +449,7 @@ public class GameManager : MonoBehaviour
     }
 
     //use magic card
-    public void useMagicCard()
+    public void useMagicCard(/*Player player*/)
     {
 
         cardSpell card1 = board[2] as cardSpell;
@@ -482,15 +482,13 @@ public class GameManager : MonoBehaviour
     }
 
     //attack phase
-    private void actionPhase()
+    private void actionPhase(Player player)     //czy w parametrach nie powinno być aktywny gracz 'activePlayer' ?
     {
-
+        
         cardHero card = board[0] as cardHero;
         cardHero card1 = board[1] as cardHero;
         cardHero opponent = board[5] as cardHero;
         cardHero opponent1 = board[6] as cardHero;
-
-        //if (card.type.Equals(Card.CardSubType.MAGE))
 
         //player
         int php = card.hp;
@@ -498,9 +496,10 @@ public class GameManager : MonoBehaviour
         int passive = card.passive;
 
         //player support
-        int hp0 = card.hp;
-        int attack0 = card.attack;
-
+        int hp1 = card1.hp;
+        int attack1 = card1.attack;
+        int passive1 = card1.passive;
+        
         //opponent
         int p2hp = opponent.hp;
         int oppAttack = opponent.attack;
@@ -509,27 +508,54 @@ public class GameManager : MonoBehaviour
         //opponent support
         int oppHP1 = opponent1.hp;
         int oppAttack1 = opponent1.attack;
+        int oppPassive1 = opponent1.passive;
 
-
-
-        //player 1 attack
-        if (boardA[1] == false)
+        if (player.Equals(playerA))                            // tutaj też nie wiem czy nie powinno być aktywnego gracza
         {
-            php = php - oppAttack;
+            //player 1 attack
+            if (boardA[1] == false)
+            {
+                p2hp = p2hp - attack;
+
+                if (p2hp <= 0)
+                {
+                    p2hp = 0;
+                    playerB.hp = 0;
+                }
+                
+            }
+            else
+                p2hp = p2hp - (attack + attack1);
+
+                if (p2hp <= 0)
+                {
+                    p2hp = 0;
+                    playerB.hp = 0;
+                }
         }
         else
-            php = php - (oppAttack + oppAttack1);
+            //player 2 attack
+            if (boardB[1] == false)                       //jesli gracz2 nie ma supporta
+            {
+                php = php - oppAttack;                    //gracz 1 traci tylko z ataku jednej karty
 
+                if (php <= 0)
+                {
+                    php = 0;
+                    playerA.hp = 0;
+                }
+            }
+            else
+                php = php - (oppAttack + oppAttack1);
 
+                if (php <= 0)
+                {
+                    php = 0;
+                    playerA.hp = 0;
+                }
 
-        //player 2 attack
-        if (boardB[1] == false)
-        {
-            p2hp = p2hp - attack;
-
-        }
-        else
-            p2hp = p2hp - (attack + attack0);
+        changeActivePlayer();                             //tego nie jestem pewny ale po kolejce powinna byc zmiana gracza
+                                                          //czy może w gameplay'u
     }
 
     internal void setDrawingCard()
