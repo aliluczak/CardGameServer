@@ -10,15 +10,15 @@ public class Player : MonoBehaviour {
     internal int hp;
     internal List<string> personalCards;
     internal List<string> commonCards;
-    internal NetworkMessageInfo playerMessage;
+    internal int channel;
 
 
 
-    public Player(string playersLogin, NetworkMessageInfo info)
+    public Player(string playersLogin, int channel)
     {
         this.login = playersLogin;
         this.hp = 10;
-        this.playerMessage = info;
+        this.channel = channel;
 
         //gets personal cards
         this.personalCards = new List<string>();
@@ -32,10 +32,10 @@ public class Player : MonoBehaviour {
         this.commonCards = new List<string>();
     }
 
-    public void setLogin(string login, NetworkMessageInfo info)
+    public void setLogin(string login, int channel)
     {
         this.login = login;
-        this.playerMessage = info;
+        this.channel = channel;
     }
 
     

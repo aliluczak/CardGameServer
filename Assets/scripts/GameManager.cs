@@ -133,13 +133,13 @@ public class GameManager : MonoBehaviour
 
         if (playerA.hp == 0)
         {
-            networkManager.sendLoseInfo(playerA.playerMessage);
-            networkManager.sendWinInfo(playerB.playerMessage);
+            networkManager.sendLoseInfo(playerA.channel);
+            networkManager.sendWinInfo(playerB.channel);
         }
         else
         {
-            networkManager.sendLoseInfo(playerB.playerMessage);
-            networkManager.sendWinInfo(playerA.playerMessage);
+            networkManager.sendLoseInfo(playerB.channel);
+            networkManager.sendWinInfo(playerA.channel);
         }
 
     }
@@ -159,7 +159,7 @@ public class GameManager : MonoBehaviour
         else
             boardB[2] = true;
 
-        networkManager.sendCard(player.playerMessage, card.id, card.name, "Hero", card.hp,card.attack, card.passive, "", 0, 0);
+        networkManager.sendCard(player.channel, card.id, card.name, "Hero", card.hp,card.attack, card.passive, "", 0, 0);
         StartCoroutine(waitForCardAdded(1));
 
         if (!drawingCard1)
@@ -171,14 +171,14 @@ public class GameManager : MonoBehaviour
             if (card == null)
             {
                 cardSpell spell = cardData.getSpell(tempCard);
-                networkManager.sendCard(player.playerMessage, spell.id, spell.name, "Spell", 0, spell.attack, 0, spell.description, spell.healing, spell.intercept);
+                networkManager.sendCard(player.channel, spell.id, spell.name, "Spell", 0, spell.attack, 0, spell.description, spell.healing, spell.intercept);
                 board[3] = spell;
                 StartCoroutine(waitForCardAdded(2));
             }
             else
             {
                 
-                networkManager.sendCard(player.playerMessage, card.id, card.name, "Hero", card.hp, card.attack, card.passive, "", 0, 0);
+                networkManager.sendCard(player.channel, card.id, card.name, "Hero", card.hp, card.attack, card.passive, "", 0, 0);
                 board[3] = hero;
                 StartCoroutine(waitForCardAdded(2));
 
@@ -200,14 +200,14 @@ public class GameManager : MonoBehaviour
                 if (card == null)
                 {
                     cardSpell spell = cardData.getSpell(tempCard);
-                    networkManager.sendCard(player.playerMessage, spell.id, spell.name, "Spell", 0, spell.attack, 0, spell.description, spell.healing, spell.intercept);
+                    networkManager.sendCard(player.channel, spell.id, spell.name, "Spell", 0, spell.attack, 0, spell.description, spell.healing, spell.intercept);
                     board[4] = spell;
                     StartCoroutine(waitForCardAdded(2));
                 }
                 else
                 {
 
-                    networkManager.sendCard(player.playerMessage, card.id, card.name, "Hero", card.hp, card.attack, card.passive, "", 0, 0);
+                    networkManager.sendCard(player.channel, card.id, card.name, "Hero", card.hp, card.attack, card.passive, "", 0, 0);
                     board[4] = hero;
                     StartCoroutine(waitForCardAdded(2));
 
@@ -274,7 +274,7 @@ public class GameManager : MonoBehaviour
 
             if (!infoSent)
             {
-                networkManager.sendMovingPhaseInfo(activePlayer.playerMessage);
+                networkManager.sendMovingPhaseInfo(activePlayer.channel);
                 infoSent = true;
             }
             waitForCardMovedInfo();
@@ -349,9 +349,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void setEndMovingPhase(NetworkMessageInfo info)
+    public void setEndMovingPhase(int channel)
     {
-        if (info.sender.Equals(playerA.playerMessage.sender))
+        if (channel.Equals(playerA.channel))
         {
             endMovingPhaseA = true;
         }
@@ -426,26 +426,26 @@ public class GameManager : MonoBehaviour
    }
   
     //move warrior card to warrior field
-    public void moveCard(int from, int to, NetworkMessageInfo info)
+    public void moveCard(int from, int to, int channel)
     {
-        if (info.sender.Equals(playerA.playerMessage.sender))
+        if (channel.Equals(playerA.channel))
         {
             board[to] = board[from];
             boardA[from] = false;
             boardA[to] = true;
-            networkManager.sendCardMovedInfo(info, from, to);
+            networkManager.sendCardMovedInfo(channel, from, to);
             setCardMoved();
         }
-        else if (info.sender.Equals(playerB.playerMessage.sender))
+        else if (channel.Equals(playerB.channel))
         {
             board[to + 5] = board[from + 5];
             boardB[from] = false;
             boardB[to] = true;
-            networkManager.sendCardMovedInfo(info, from, to);
+            networkManager.sendCardMovedInfo(channel, from, to);
             setCardMoved();
         }
         else
-            networkManager.sendCardCannotBeMovedInfo(info);
+            networkManager.sendCardCannotBeMovedInfo(channel);
     }
 
     //use magic card
