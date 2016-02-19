@@ -310,7 +310,7 @@ public class RunServer : MonoBehaviour {
     void magic(NetworkMessage msg)
     {
         CardNumberMessage number = msg.ReadMessage<CardNumberMessage>();
-        gameManager.useMagicCard();
+        gameManager.useMagicCard(number.cardNumber);
     }
 
     void endMovePhase(NetworkMessage msg) {

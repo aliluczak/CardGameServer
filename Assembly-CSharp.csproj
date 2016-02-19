@@ -50,11 +50,17 @@
      <Compile Include="Assets\scripts\CardData.cs" />
      <Compile Include="Assets\scripts\DatabaseManager.cs" />
      <Compile Include="Assets\scripts\GameManager.cs" />
+     <Compile Include="Assets\scripts\Messages\CardMessage.cs" />
+     <Compile Include="Assets\scripts\Messages\CardNumberMessage.cs" />
+     <Compile Include="Assets\scripts\Messages\CardRequestMessage.cs" />
+     <Compile Include="Assets\scripts\Messages\MoveMessage.cs" />
+     <Compile Include="Assets\scripts\Messages\RegisterLoginMessage.cs" />
      <Compile Include="Assets\scripts\Player.cs" />
      <Compile Include="Assets\scripts\PlayersData.cs" />
      <Compile Include="Assets\scripts\RunServer.cs" />
      <Compile Include="Assets\scripts\cardHero.cs" />
      <Compile Include="Assets\scripts\cardSpell.cs" />
+     <None Include="Assets\players.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

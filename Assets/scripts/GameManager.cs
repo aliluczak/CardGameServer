@@ -449,113 +449,235 @@ public class GameManager : MonoBehaviour
     }
 
     //use magic card
-    public void useMagicCard(/*Player player*/)
+    public void useMagicCard(int numer)
     {
 
-        cardSpell card1 = board[2] as cardSpell;
-        cardSpell card2 = board[3] as cardSpell;
-        cardSpell card3 = board[4] as cardSpell;
-
-        if (card1.Equals(Card.CardType.SPELL))
+        if (numer > 5)                                                              // uzycie magii przez gracza B
         {
-            int healing = card1.healing;
-            int attack = card1.attack;
-            int intercept = card1.intercept;
+            if (boardB[1].Equals(true))                                             // jak jest support u gracza B
+            {
+                if (boardA[1].Equals(true))                                         // jak jest support u gracza A
+                {
+                    board[1].hp = board[1].hp - board[numer].attack;                    // zabieramy hp supportowi A gdy on jest 
+                    board[6].hp = board[6].hp + board[numer].hp;                        // dodajemy zycie supportowi B gdy on jest (=<10)
+                    boardB[numer % 5] = false;                                          // usuwamy kartę magii gracza B po jej uzyciu
+
+                    if (board[1].hp <= 0)                                               // sprawdzamy czy support gracza A ma jeszcze zycie 
+                    {
+                        boardA[1] = false;                                              // niszczymy supporta A
+                    }
+                }
+                else                                                                    // jak gracz A nie ma supporta
+                {
+                    int tempHP = board[0].hp;                                           // tymczasowe hp hero A przed atakiem (w razie utraty hp przez playera)
+                    board[0].hp = board[0].hp - board[numer].attack;                    // zabieramy hp hero A gdy on jest 
+                    board[6].hp = board[6].hp + board[numer].hp;                        // dodajemy zycie supportowi B (nie moze byc wiecej niz 10)
+                    boardB[numer % 5] = false;                                          // usuwamy kartę magii gracza B po jej uzyciu
+
+                    if (board[0].hp <= 0)                                               // sprawdzamy czy hero gracza A ma jeszcze zycie 
+                    {                           // board[numer].attack - tempHP = board[0].hp w tym momencie
+                        playerA.hp = playerA.hp - (board[numer].attack - tempHP);       // odejmujemy pozostale punkty ataku od samego gracza A (juz nic go nie chroni)
+                        boardA[0] = false;                                              // niszczymy hero A
+                    }
+                }
+            }
+            else                                                                        // nie ma supporta u gracza B
+            {
+                if (boardA[1].Equals(true))                                             // jak jest support u gracza A
+                {
+                    board[1].hp = board[1].hp - board[numer].attack;                    // zabieramy hp supportowi A gdy on jest 
+                    board[5].hp = board[5].hp + board[numer].hp;                        // dodajemy zycie hero B gdy on jest (=<10)
+                    boardB[numer % 5] = false;                                          // usuwamy kartę magii gracza B po jej uzyciu
+
+                    if (board[1].hp <= 0)                                               // sprawdzamy czy support gracza A ma jeszcze zycie 
+                    {
+                        boardA[1] = false;                                              // niszczymy supporta A
+                    }
+                }
+                else                                                                    // jak gracz A nie ma supporta
+                {
+                    int tempHP = board[0].hp;                                           // tymczasowe hp przed atakiem (w razie utraty hp przez playera)
+                    board[0].hp = board[0].hp - board[numer].attack;                    // zabieramy hp hero A gdy on jest 
+                    board[5].hp = board[5].hp + board[numer].hp;                        // dodajemy zycie hero B gdy nie ma supporta (nie moze byc wiecej niz 10)
+                    boardB[numer % 5] = false;                                          // usuwamy kartę magii gracza B po jej uzyciu
+
+                    if (board[0].hp <= 0)                                               // sprawdzamy czy hero gracza A ma jeszcze zycie 
+                    {
+                        playerA.hp = playerA.hp - (board[numer].attack - tempHP);       // odejmujemy pozostale punkty ataku od samego gracza A (juz nic go nie chroni)
+                        boardA[0] = false;                                              // niszczymy hero A
+                    }
+                }
+            }
         }
 
-
-        if (card2.Equals(Card.CardType.SPELL))
+        else                                                                            // uzycie magii przez gracza A
         {
-            int healing = card2.healing;
-            int attack = card2.attack;
-            int intercept = card2.intercept;
+
+            if (boardB[1].Equals(true))                                                 // jak jest support u gracza B
+            {
+                if (boardA[1].Equals(true))                                             // jak jest support u gracza A
+                {
+                    board[6].hp = board[6].hp - board[numer].attack;                    // zabieramy hp supportowi B gdy on jest 
+                    board[1].hp = board[1].hp + board[numer].hp;                        // dodajemy zycie supportowi A gdy on jest (=<10)
+                    boardA[numer % 5] = false;                                          // usuwamy kartę magii gracza A po jej uzyciu
+
+                    if (board[6].hp <= 0)                                               // sprawdzamy czy support gracza B ma jeszcze zycie 
+                    {
+                        boardB[1] = false;                                              // niszczymy supporta B
+                    }
+                }
+                else                                                                    // jak gracz A nie ma supporta
+                {
+                    board[6].hp = board[6].hp - board[numer].attack;                    // zabieramy hp supportowi B gdy on jest 
+                    board[0].hp = board[0].hp + board[numer].hp;                        // dodajemy zycie hero A (nie moze byc wiecej niz 10)
+                    boardA[numer % 5] = false;                                          // usuwamy kartę magii gracza A po jej uzyciu
+
+                    if (board[6].hp <= 0)                                               // sprawdzamy czy support gracza B ma jeszcze zycie 
+                    {
+                        boardB[1] = false;                                              // niszczymy supporta B
+                    }
+                }
+            }
+            else                                                                        // nie ma supporta u gracza B
+            {
+                if (boardA[1].Equals(true))                                             // jak jest support u gracza A
+                {
+                    int tempHP = board[5].hp;                                           // tymczasowe hp przed atakiem (w razie utraty hp przez playera)
+                    board[5].hp = board[5].hp - board[numer].attack;                    // zabieramy hp hero B gdy on jest 
+                    board[1].hp = board[1].hp + board[numer].hp;                        // dodajemy zycie supporta A gdy on jest (=<10)
+                    boardA[numer % 5] = false;                                          // usuwamy kartę magii gracza A po jej uzyciu
+
+                    if (board[5].hp <= 0)                                               // sprawdzamy czy hero B ma jeszcze zycie 
+                    {
+                        playerB.hp = playerB.hp - (board[numer].attack - tempHP);       // odejmujemy pozostale punkty ataku od samego gracza A (juz nic go nie chroni)
+                        boardB[0] = false;                                              // niszczymy hero B
+                    }
+                }
+                else                                                                    // jak gracz A nie ma supporta
+                {
+                    int tempHP = board[5].hp;                                           // tymczasowe hp przed atakiem (w razie utraty hp przez playera)
+                    board[5].hp = board[5].hp - board[numer].attack;                    // zabieramy hp hero B gdy on jest 
+                    board[0].hp = board[0].hp + board[numer].hp;                        // dodajemy zycie hero A gdy nie ma supporta (nie moze byc wiecej niz 10)
+                    boardA[numer % 5] = false;                                          // usuwamy kartę magii gracza A po jej uzyciu
+
+                    if (board[5].hp <= 0)                                               // sprawdzamy czy hero B ma jeszcze zycie 
+                    {
+                        playerB.hp = playerB.hp - (board[numer].attack - tempHP);       // odejmujemy pozostale punkty ataku od samego gracza A (juz nic go nie chroni)
+                        boardB[0] = false;                                              // niszczymy hero B
+                    }
+                }
+            }
         }
-
-
-        if (card3.Equals(Card.CardType.SPELL))
-        {
-            int healing = card3.healing;
-            int attack = card3.attack;
-            int intercept = card3.intercept;
-        }
-
     }
 
     //attack phase
     private void actionPhase(Player player)     //czy w parametrach nie powinno być aktywny gracz 'activePlayer' ?
     {
-        
-        cardHero card = board[0] as cardHero;
-        cardHero card1 = board[1] as cardHero;
-        cardHero opponent = board[5] as cardHero;
-        cardHero opponent1 = board[6] as cardHero;
-
-        //player
-        int php = card.hp;
-        int attack = card.attack;
-        int passive = card.passive;
-
-        //player support
-        int hp1 = card1.hp;
-        int attack1 = card1.attack;
-        int passive1 = card1.passive;
-        
-        //opponent
-        int p2hp = opponent.hp;
-        int oppAttack = opponent.attack;
-        int oppPassive = opponent.passive;
-
-        //opponent support
-        int oppHP1 = opponent1.hp;
-        int oppAttack1 = opponent1.attack;
-        int oppPassive1 = opponent1.passive;
 
         if (player.Equals(playerA))                            // tutaj też nie wiem czy nie powinno być aktywnego gracza
         {
             //player 1 attack
-            if (boardA[1] == false)
+            if (boardA[1] == false)                                                         // player A nie ma supporta
             {
-                p2hp = p2hp - attack;
-
-                if (p2hp <= 0)
+                if (boardB[1] == false)                                                     // player B nie ma supporta
                 {
-                    p2hp = 0;
-                    playerB.hp = 0;
+                    int tempHP = board[5].hp;                                               // tymczasowe hp przed atakiem (w razie utraty hp przez playera)
+                    board[5].hp = board[5].hp - board[0].attack;                            // zycie traci tylko hero playera B
+
+                    if (board[5].hp <= 0)                                                   // sprawdzanie i usuwanie hero B
+                    {
+                        playerB.hp = playerB.hp - (board[0].attack - tempHP);               // odejmujemy pozostale punkty ataku od samego gracza B (juz nic go nie chroni)
+                        boardB[0] = false;
+                    }
                 }
-                
+                else                                                                        // player B ma supporta
+                {
+                    board[6].hp = board[6].hp - board[0].attack;                            // zycie traci support playera B
+
+                    if (board[6].hp <= 0)                                                   // sprawdzanie i usuwanie supporta playera B
+                    {
+                        boardB[1] = false;
+                    }
+                }
+
             }
-            else
-                p2hp = p2hp - (attack + attack1);
-
-                if (p2hp <= 0)
+            else                                                                            // player A ma supporta
+            {
+                if (boardB[1] == false)                                                     // player B nie ma supporta
                 {
-                    p2hp = 0;
-                    playerB.hp = 0;
+                    int tempHP = board[5].hp;                                               // tymczasowe hp przed atakiem (w razie utraty hp przez playera)
+                    board[5].hp = board[5].hp - (board[0].attack + board[1].attack);
+
+                    if (board[5].hp <= 0)                                                   // sprawdzanie i usuwanie hero B
+                    {
+                        playerB.hp = playerB.hp - ((board[0].attack + board[1].attack) - tempHP);       // odejmujemy pozostale punkty ataku od samego gracza B (juz nic go nie chroni)
+                        boardB[0] = false;
+                    }
                 }
+
+                else                                                                         // player B ma supporta
+                {
+                    board[6].hp = board[6].hp - (board[0].attack + board[1].attack);         // zycie traci support gracza B
+
+                    if (board[6].hp <= 0)                                                    // sprawdzanie i usuwanie supporta gracza B   
+                    {
+                        boardB[1] = false;
+                    }
+                }
+            }
+
+
         }
         else
+        {
             //player 2 attack
-            if (boardB[1] == false)                       //jesli gracz2 nie ma supporta
+            if (boardB[1] == false)                                                         // jesli gracz B nie ma supporta
             {
-                php = php - oppAttack;                    //gracz 1 traci tylko z ataku jednej karty
-
-                if (php <= 0)
+                if (boardA[1] == false)                                                     // jesli gracz A nie ma supporta
                 {
-                    php = 0;
-                    playerA.hp = 0;
+                    int tempHP = board[0].hp;                                               // tymczasowe hp przed atakiem
+                    board[0].hp = board[0].hp - board[5].attack;                            // gracz A traci tylko z ataku jednej karty
+
+                    if (board[0].hp <= 0)                                                   // sprawdzanie i usuwanie hero A
+                    {
+                        playerA.hp = playerA.hp - (board[5].attack - tempHP);               // odejmujemy pozostale punkty ataku od samego gracza A (juz nic go nie chroni)
+                        boardA[0] = false;
+                    }
+                }
+                else                                                                        // gracz A ma supporta
+                {
+                    board[1].hp = board[1].hp - board[5].attack;                            // gracz A traci tylko z ataku jednej karty
+
+                    if (board[1].hp <= 0)
+                    {
+                        boardA[1] = false;
+                    }
                 }
             }
-            else
-                php = php - (oppAttack + oppAttack1);
-
-                if (php <= 0)
+            else                                                                            // gracz B ma supporta
+            {
+                if (boardA[1] == false)                                                     // gracz A nie ma supporta
                 {
-                    php = 0;
-                    playerA.hp = 0;
-                }
+                    int tempHP = board[0].hp;                                               // tymczasowe hp przed atakiem (w razie utraty hp przez playera)
+                    board[0].hp = board[0].hp - (board[5].attack + board[6].attack);
 
-        changeActivePlayer();                             //tego nie jestem pewny ale po kolejce powinna byc zmiana gracza
-                                                          //czy może w gameplay'u
+                    if (board[0].hp <= 0)                                                   // sprawdzanie i kasownie hero A
+                    {
+                        playerA.hp = playerA.hp - ((board[5].attack + board[6].attack) - tempHP);       // odejmujemy pozostale punkty ataku od samego gracza A (juz nic go nie chroni)
+                        boardA[0] = false;
+                    }
+                }
+                else                                                                        // gracz A ma supporta
+                {
+                    board[1].hp = board[1].hp - (board[5].attack + board[6].attack);        // wtedy atakujemy supporta gracza A
+
+                    if (board[1].hp <= 0)                                                   // sprawdzanie i kasownie supporta A
+                    {
+                        boardA[1] = false;
+                    }
+                }
+            }
+        }
     }
 
     internal void setDrawingCard()
